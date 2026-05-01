@@ -15,8 +15,7 @@ nanmask = ~(isnan(Vr) | isnan(Ir)); % remove all rows with nan values
 posmask = Vr > 0 & Ir > 0; % remove negative values
 Vr = Vr(nanmask & posmask);
 Ir = Ir(nanmask & posmask);
-
-
+    
 % Assume I = a*V^b, solve for a,b
 [powfit, gof] = fit(Vr, Ir, @(a, b, x) a.*x.^b)
 powmodel = powfit(sort(Vr));
@@ -26,15 +25,17 @@ fig1 = figure;
 hold on; grid on
 % data
 plot(Vr, Ir, LineWidth=2) 
-% power model
-plot(sort(Vr), powmodel, LineWidth=2, Color="#6B6666", LineStyle="--")
+
+% Nominal Leakage Current
+yline(25, "--", "I_{leakage} = 25 nA", ...
+    LineWidth=2, LabelVerticalAlignment="bottom", FontSize=16)
 
 % Labels
-text(1, 3, sprintf("I_r = %fV_r^{%f}", powfit.a, powfit.b), FontSize=16)
 ax = gca;
 ax.FontSize = 16;
-legend("Reverse IV Characteristic", "Power Model", ...
-    Location="southeast")
+legend( ...
+    "Reverse IV Characteristic", "Nominal Leakage Current", ...
+    Location="northwest")
 xlabel("\bfReverse Voltage (V)")
 ylabel("\bfReverse Leakage Current (nA)")
 title("\bfSignal Diode Reverse Characteristics")
@@ -46,14 +47,21 @@ fig2 = figure;
 semilogy(Vr, Ir, LineWidth=2)
 hold on; grid on
 % power model
-plot(sort(Vr), powmodel, LineWidth=2, Color="#6B6666", Linestyle="--")
+plot(sort(Vr), powmodel, LineWidth=2, Linestyle="--")
+
+% Nominal Leakage Current
+yline(25, "--", "I_{leakage} = 25 nA", ...
+    LineWidth=2, LabelVerticalAlignment="bottom", FontSize=16)
 
 % Labels
 text(1, 3, sprintf("I_r = %fV_r^{%f}", powfit.a, powfit.b), FontSize=16)
 ax = gca;
 ax.FontSize = 16;
-legend("Reverse IV Characteristic", "Power Model", ...
-    Location="southeast")
+legend( ...
+    "Reverse IV Characteristic", ...
+    "Power Model", ...
+    "Nominal Leakage Current", ...
+    Location="northwest")
 xlabel("\bfReverse Voltage (V)")
 ylabel("\bfReverse Leakage Current (nA)")
 title("\bfSignal Diode Reverse Characteristics")

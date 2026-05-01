@@ -42,11 +42,20 @@ Vf_signal_linear = [ ...
 If_signal_linear = log([ ...
     If1_clipped; If2_clipped; If3_clipped]);
 [coeffs, err] = polyfit( ...
-    Vf_signal_linear, If_signal_linear, 1);
+    Vf_signal_linear, If_signal_linear, 1)
 
 % compute ideality factor
 VT = 25.852e-3; % thermal voltage kT/q at 300K
 id_fac = 1/(coeffs(1)*VT);
+fprintf("Measured Ideality Factor: n = %f\n", id_fac)
+
+% datasheet values (visually determined)
+Vf_ds = [0.25, 0.4, 0.6, 0.8];
+If_ds = [0.001, 0.015, 0.9, 30];
+[coeffs_ds, err_ds] = polyfit( ...
+    Vf_ds, log(If_ds), 1)
+id_fac_ds = 1/(coeffs_ds(1)*VT);
+fprintf("Datasheet Ideality Factor: n = %f\n", id_fac_ds)
 
 % % Plotting
 fig_signal_f = figure;
@@ -57,7 +66,7 @@ hold on; grid on
 plot(Vf2, If2, LineWidth=2)
 plot(Vf3, If3, LineWidth=2)
 
-% plot linear fit
+% plot exponential fit to get ideality factor
 v_lin = [0.2, 0.7];
 i_lin = exp(polyval(coeffs, v_lin));
 plot( ...
@@ -65,6 +74,11 @@ plot( ...
     LineWidth=2, LineStyle="--", Color="#6B6666" ...
     )
 text(0.3, 1e-6, sprintf("n=%f", id_fac), Fontsize=16)
+text(0.4, 1e-2, sprintf("n=%f", id_fac_ds), Fontsize=16)
+
+% datasheet IV curve
+Vf_ds_plot = [0.65, 0.8];
+plot(Vf_ds, If_ds, LineWidth=2)
 
 % labels
 legend( ...
@@ -72,6 +86,7 @@ legend( ...
     "10V/mA @ 2V/div vertical", ...
     "10V/mA @ 0.1V/div vertical", ...
     "Ideality Factor Estimation", ...
+    "Datasheet IV Curve", ...
     Location="northwest" ...
     )
 ax = gca;
